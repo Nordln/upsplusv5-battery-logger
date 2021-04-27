@@ -5,8 +5,8 @@ GeeekPi UPSv5 (EP-0136) board, connected to a Raspberry Pi,and writes to a
 timestamped CSV file for optional graphing via Pandas (if installed).
 
 ## Usage: 
-'python3 upspv5-batt-logger.py' - logs to local [timestamp].csv file
-'python3 upspv5-batt-logger.py file.csv "[test batt label]"' - graph results as local png images
+* 'python3 upspv5-batt-logger.py' - logs to local [timestamp].csv file
+* 'python3 upspv5-batt-logger.py file.csv "[test batt label]"' - graph results as local png images
 
 Use to capture battery discharge profile. Run immmediately after a fresh booting
 after a full charge for best results. Recommend enablling 'Overlay FS' if using

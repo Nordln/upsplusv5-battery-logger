@@ -44,11 +44,11 @@ def make_graph():
     # test for pandas, then graph file referenced as argument if available
     try:
         # check dependencies
-        import pandas as pd
         print("Checking: Pandas library installed.")
+        import pandas as pd
+        print("Checking: MatplotLib library installed.")
         import matplotlib.pyplot as plt
         import matplotlib.ticker as ticker
-        print("Checking: MatplotLib library installed.")
         
         # buld and save graph
         df = pd.read_csv(sys.argv[1])

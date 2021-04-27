@@ -2,7 +2,8 @@
 
 Logs uptime, battery voltage, device wattage and battery %remaining from the
 GeeekPi UPSv5 (EP-0136) board, connected to a Raspberry Pi,and writes to a
-timestamped CSV file for optional graphing via Pandas (if installed).
+timestamped CSV file for optional graphing via Pandas (if installed). Built 
+and tested on a Raspberry Pi4 8gb.
 
 ## Usage: 
 * 'python3 upspv5-batt-logger.py' - logs to local [timestamp].csv file

@@ -1,5 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 UPSplus v5 Battery Logger V1.0
+Author: Ed Watson (mail@edwilldesign.com)
 
 Logs uptime, battery voltage, device wattage and battery %remaining from the
 GeeekPi UPSv5 (EP-0136) board, connected to a Raspberry Pi,and writes to a
@@ -7,11 +10,11 @@ timestamped CSV file for optional graphing via Pandas (if installed).
 
 Usage:
 'python3 upspv5-batt-logger.py' - logs to local [timestamp].csv file
-'python3 upspv5-batt-logger.py file.csv "[test batt label]"' - graph results as local png images
+'python3 upspv5-batt-logger.py file.csv "[label for graph title]"' - graph results as local png images
 
-Use to capture battery discharge profile. Run immmediately after a fresh booting
-after a full charge for best results. Recommend enablling 'Overlay FS' if using
-RasPi Debian Buster to make the FSread-only w/ RAM disk. This prevents FS damage
+Use to capture battery discharge profile. Run immediately after booting the device
+following a full charge for best results. Recommend enabling 'Overlay FS' if using
+RasPi Debian Buster to make the FS read-only w/ RAM disk. This prevents FS damage
 when battery power becomes low, causing power outages. 
 
 Note: "% remaining" is not accuate during charging. 
@@ -48,28 +51,31 @@ def make_graph():
         import pandas as pd
         print("Checking: MatplotLib library installed.")
         import matplotlib.pyplot as plt
-        import matplotlib.ticker as ticker
+        from matplotlib.dates import DateFormatter
         
-        # buld and save graph
+        # buld and save voltage graph
         df = pd.read_csv(sys.argv[1])
-        #df['Time (s)'] = pd.to_datetime(df['Time (s)'], unit='s')
+        df['Time (H:M)'] = pd.to_datetime(df['Time (s)'], unit='s')
+        df.to_csv('test.csv')
         
-        df.plot(x="Time (s)", y=["Volts (mV)"], grid=True, color='Red' ) # items to plot
-        plt.title("Time/voltage plot of " + str(sys.argv[2]))
+        #fig, ax = plt.subplots()
+        df.plot(x="Time (H:M)", y=["Volts (mV)"], grid=True, color='Red') # items to plot
+        plt.gca().xaxis.set_major_formatter(DateFormatter('%H:%M'))
+        plt.title("Time/voltage plot of " + str(sys.argv[2])) 
         plt.savefig("Graph_voltage_" + sys.argv[1] + ".png") # save as png
         
+        # build and save voltage, wattage and % graphs
         fig, (ax1, ax2, ax3) = plt.subplots(nrows=3,ncols=1)
-        
-        df.plot(x="Time (s)", y=["Volts (mV)"], legend=True, ax=ax1, figsize=(10,10), grid=True,  color='Red') # items to plot
+        df.plot(x="Time (H:M)", y=["Volts (mV)"], legend=True, ax=ax1, figsize=(10,10), grid=True,  color='Red') # items to plot
+        ax1.xaxis.set_major_formatter(DateFormatter('%H:%M'))
         ax1.set_title("Time/Voltage plot of " + str(sys.argv[2]))
         
-        #ax1.xaxis.set_major_locator(ticker.MultipleLocator(50))
-        #ax1.xaxis.set_minor_locator(ticker.MultipleLocator(25))
-        
-        df.plot(x="Time (s)", y=["Power (mW)"], legend=True, ax=ax2, figsize=(10,10), grid=True, color='Green') # items to plot
+        df.plot(x="Time (H:M)", y=["Power (mW)"], legend=True, ax=ax2, figsize=(10,10), grid=True, color='Green') # items to plot
+        ax2.xaxis.set_major_formatter(DateFormatter('%H:%M'))
         ax2.set_title("Time/Power plot of " + str(sys.argv[2]))
         
-        df.plot(x="Time (s)", y=["Remaining %"], legend=True, ax=ax3, figsize=(10,10), grid=True, color='Blue') # items to plot
+        df.plot(x="Time (H:M)", y=["Remaining %"], legend=True, ax=ax3, figsize=(10,10), grid=True, color='Blue') # items to plot
+        ax3.xaxis.set_major_formatter(DateFormatter('%H:%M'))
         ax3.set_title("Time/Remaining% plot of " + str(sys.argv[2]))
       
         plt.tight_layout()
@@ -80,7 +86,7 @@ def make_graph():
     except ImportError:
         print("Error: Cannot build graph - Pandas and/or matplotlib library not installed.")
         print("")
-        print("To install dependancies, use 'pip3 install pandas matplotlib'. If you encounter errors Panda's dependancy numpy, you are probably running Debian Buster on a Pi, and so also need to install OpenBLAS ('apt-get install libatlas-base-dev")
+        print("To install dependancies, use 'pip3 install pandas matplotlib'. If you encounter errors over the Pandas dependancy 'numpy', you are probably running Debian Buster on a Pi, and so also need to install OpenBLAS ('apt-get install libatlas-base-dev")
 
 def check_args():
     # test for graph argument, build graph, then exit
@@ -132,8 +138,6 @@ def main():
 main()
 
 """
-Author: Ed Watson
-
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or

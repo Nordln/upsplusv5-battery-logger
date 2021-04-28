@@ -56,7 +56,6 @@ def make_graph():
         # buld and save voltage graph
         df = pd.read_csv(sys.argv[1])
         df['Time (H:M)'] = pd.to_datetime(df['Time (s)'], unit='s')
-        df.to_csv('test.csv')
         
         #fig, ax = plt.subplots()
         df.plot(x="Time (H:M)", y=["Volts (mV)"], grid=True, color='Red') # items to plot

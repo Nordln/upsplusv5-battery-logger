@@ -57,7 +57,6 @@ def make_graph():
         df = pd.read_csv(sys.argv[1])
         df['Time (H:M)'] = pd.to_datetime(df['Time (s)'], unit='s')
         
-        #fig, ax = plt.subplots()
         df.plot(x="Time (H:M)", y=["Volts (mV)"], grid=True, color='Red') # items to plot
         plt.gca().xaxis.set_major_formatter(DateFormatter('%H:%M'))
         plt.title("Time/voltage plot of " + str(sys.argv[2])) 
@@ -89,8 +88,11 @@ def make_graph():
 
 def check_args():
     # test for graph argument, build graph, then exit
-    if len(sys.argv) > 1 :
-    #if (len(sys.argv) > 1) and (str(sys.argv[1]) == "p"):
+    if len(sys.argv) == 2 :
+        print("Error: Please enter a graph title in double-quotes after file name")
+        sys.exit()
+
+    if len(sys.argv) > 2 :
         make_graph()
         sys.exit()
 

@@ -4,7 +4,7 @@ Author: Ed Watson (mail@edwilldesign.com)
 Logs uptime, battery voltage, device wattage and battery %remaining from the
 GeeekPi UPSv5 (EP-0136) board connected to a Raspberry Pi, and writes to a
 timestamped CSV file for optional graphing via Pandas/Matplotlib (if installed). Built 
-and tested on a Raspberry Pi4b 8gb running RaspiOS (Debian Buster) w/ UPSplusV5 FW Ver.3.
+and tested on a Raspberry Pi4b 8gb running RaspiOS 2021-03-04 (Debian Buster) w/ UPSplusV5 FW Ver.3.
 
 Included are example graphs pngs, built from a 4-hour capture of running batteries down.
 

@@ -8,6 +8,10 @@ and tested on a Raspberry Pi4b 8gb running RaspiOS 2021-03-04 (Debian Buster) w/
 
 Included are example graphs pngs, built from a 4-hour capture of running batteries down.
 
+## Dependances:
+* libatlas (needed for numpy): `apt-get -y install libatlas-base-dev`
+* Pandas (which includes numpy) and matplotlib: `pip3 install pandas matplotlib`
+
 ## Usage: 
 * 'python3 upspv5-batt-logger.py' - logs to local [timestamp].csv file
 * 'python3 upspv5-batt-logger.py file.csv "[label for graph title]"' - graph results as local png images

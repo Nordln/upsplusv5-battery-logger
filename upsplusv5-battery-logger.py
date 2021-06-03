@@ -17,7 +17,7 @@ following a full charge for best results. Recommend enabling 'Overlay FS' if usi
 RasPi Debian Buster to make the FS read-only w/ RAM disk. This prevents FS damage
 when battery power becomes low, causing power outages. 
 
-Note: "% remaining" is not accuate during charging. 
+Note: "% remaining" is not accurate during charging.
 """
 
 import sys
@@ -45,6 +45,7 @@ ina = INA219(0.00725, address=INA_DEVICE_ADDR)
 ina.configure()
 ina_batteries = INA219(0.005, address=INA_BATT_ADDR)
 ina_batteries.configure()
+
 
 def make_graph():
     # test for pandas, then graph file referenced as argument if available
@@ -101,7 +102,9 @@ def make_graph():
         print("Error: Cannot build graph - Pandas and/or matplotlib library not installed.")
         print("")
         print(
-            "To install dependancies, use 'pip3 install pandas matplotlib'. If you encounter errors over the Pandas dependancy 'numpy', you are probably running Debian Buster on a Pi, and so also need to install OpenBLAS ('apt-get install libatlas-base-dev")
+            "To install dependancies, use 'pip3 install pandas matplotlib'. If you encounter errors over the Pandas "
+            "dependancy 'numpy', you are probably running Debian Buster on a Pi, and so also need to install OpenBLAS "
+            "('apt-get install libatlas-base-dev")
 
 
 def check_args():
@@ -133,20 +136,19 @@ def create_file():
 def main():
     check_args()
     create_file()
-    while (True):
+    while True:
         # Loop indefinately whilst reading and writing data, until user hits Ctrl-C 
         try:
-            aReceiveBuf = []
-            aReceiveBuf.append(0x00)  # Placeholder
+            a_receive_buf = [0x00]
             for i in range(1, 255):
-                aReceiveBuf.append(bus.read_byte_data(SMB_DEVICE_ADDR, i))
+                a_receive_buf.append(bus.read_byte_data(SMB_DEVICE_ADDR, i))
             csvdata = [
-                "%d" % (aReceiveBuf[39] << 24 | aReceiveBuf[38] << 16 | aReceiveBuf[37] << 8 | aReceiveBuf[36]),
-                "%d" % (aReceiveBuf[6] << 8 | aReceiveBuf[5]),
+                "%d" % (a_receive_buf[39] << 24 | a_receive_buf[38] << 16 | a_receive_buf[37] << 8 | a_receive_buf[36]),
+                "%d" % (a_receive_buf[6] << 8 | a_receive_buf[5]),
                 "%.0f" % ina.power(),
-                "%d" % (aReceiveBuf[20] << 8 | aReceiveBuf[19]),
+                "%d" % (a_receive_buf[20] << 8 | a_receive_buf[19]),
                 "%.0f" % ina_batteries.current(),
-                "%d" % (aReceiveBuf[12] << 8 | aReceiveBuf[11])]
+                "%d" % (a_receive_buf[12] << 8 | a_receive_buf[11])]
             print(csvdata)
             with open(CSV_FILE, 'a', newline='') as file:
                 writer = csv.writer(file, quoting=csv.QUOTE_NONNUMERIC)

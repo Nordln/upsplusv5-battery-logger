@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-UPSplus v5 Battery Logger V1.0
-Author: Ed Watson (mail@edwilldesign.com)
+UPSplus v5 Battery Logger V1.1
+Original author: Ed Watson (mail@edwilldesign.com)
+Contributors: leandroalbero
 
 Logs uptime, battery voltage, device wattage and battery %remaining from the
 GeeekPi UPSv5 (EP-0136) board, connected to a Raspberry Pi,and writes to a

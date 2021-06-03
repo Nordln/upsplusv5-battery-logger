@@ -17,7 +17,7 @@ following a full charge for best results. Recommend enabling 'Overlay FS' if usi
 RasPi Debian Buster to make the FS read-only w/ RAM disk. This prevents FS damage
 when battery power becomes low, causing power outages. 
 
-Note: "% remaining" is not accuate during charging. 
+Note: "% remaining" is not accurate during charging.
 """
 
 import sys
@@ -27,21 +27,25 @@ import csv
 from datetime import datetime
 
 import smbus
-from ina219 import INA219,DeviceRangeError
+from ina219 import INA219, DeviceRangeError
 
 I2C_DEVICE_BUS = 1
 SMB_DEVICE_ADDR = 0x17
 INA_DEVICE_ADDR = 0x40
-DELAY = 5 # delay between I2C reads (in seconds)
-STOP_ON_ERR = 0 # stop logging on bus read error
+INA_BATT_ADDR = 0x45
+DELAY = 5  # delay between I2C reads (in seconds)
+STOP_ON_ERR = 0  # stop logging on bus read error
 
 now = datetime.now()
 T = now.strftime("%Y-%m-%d_%H%M%S")
 CSV_FILE = "batt_log_" + T + ".csv"
 
 bus = smbus.SMBus(I2C_DEVICE_BUS)
-ina = INA219(0.00725,address=INA_DEVICE_ADDR)
+ina = INA219(0.00725, address=INA_DEVICE_ADDR)
 ina.configure()
+ina_batteries = INA219(0.005, address=INA_BATT_ADDR)
+ina_batteries.configure()
+
 
 def make_graph():
     # test for pandas, then graph file referenced as argument if available
@@ -52,81 +56,103 @@ def make_graph():
         print("Checking: MatplotLib library installed.")
         import matplotlib.pyplot as plt
         from matplotlib.dates import DateFormatter
-        
+
         # buld and save voltage graph
         df = pd.read_csv(sys.argv[1])
         df['Time (H:M)'] = pd.to_datetime(df['Time (s)'], unit='s')
-        
-        df.plot(x="Time (H:M)", y=["Volts (mV)"], grid=True, color='Red') # items to plot
+
+        df.plot(x="Time (H:M)", y=["Volts (mV)"], grid=True, color='Red')  # items to plot
         plt.gca().xaxis.set_major_formatter(DateFormatter('%H:%M'))
-        plt.title("Time/voltage plot of " + str(sys.argv[2])) 
-        plt.savefig("Graph_voltage_" + sys.argv[1] + ".png") # save as png
-        
+        plt.title("Time/voltage plot of " + str(sys.argv[2]))
+        plt.savefig("Graph_voltage_" + sys.argv[1] + ".png")  # save as png
+
         # build and save voltage, wattage and % graphs
-        fig, (ax1, ax2, ax3) = plt.subplots(nrows=3,ncols=1)
-        df.plot(x="Time (H:M)", y=["Volts (mV)"], legend=True, ax=ax1, figsize=(10,10), grid=True,  color='Red') # items to plot
+        fig, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(nrows=5, ncols=1)
+        df.plot(x="Time (H:M)", y=["Volts (mV)"], legend=True, ax=ax1, figsize=(10, 10), grid=True,
+                color='Red')  # items to plot
         ax1.xaxis.set_major_formatter(DateFormatter('%H:%M'))
         ax1.set_title("Time/Voltage plot of " + str(sys.argv[2]))
-        
-        df.plot(x="Time (H:M)", y=["Power (mW)"], legend=True, ax=ax2, figsize=(10,10), grid=True, color='Green') # items to plot
+
+        df.plot(x="Time (H:M)", y=["Power (mW)"], legend=True, ax=ax2, figsize=(10, 10), grid=True,
+                color='Green')  # items to plot
         ax2.xaxis.set_major_formatter(DateFormatter('%H:%M'))
         ax2.set_title("Time/Power plot of " + str(sys.argv[2]))
-        
-        df.plot(x="Time (H:M)", y=["Remaining %"], legend=True, ax=ax3, figsize=(10,10), grid=True, color='Blue') # items to plot
+
+        df.plot(x="Time (H:M)", y=["Remaining %"], legend=True, ax=ax3, figsize=(10, 10), grid=True,
+                color='Blue')  # items to plot
         ax3.xaxis.set_major_formatter(DateFormatter('%H:%M'))
         ax3.set_title("Time/Remaining% plot of " + str(sys.argv[2]))
-      
+
+        df.plot(x="Time (H:M)", y=["Battery Current (mA)"], legend=True, ax=ax4, figsize=(10, 10), grid=True,
+                color='Blue')  # items to plot
+        ax4.xaxis.set_major_formatter(DateFormatter('%H:%M'))
+        ax4.set_title("Time/BattCurrent mA plot of " + str(sys.argv[2]))
+
+        df.plot(x="Time (H:M)", y=["Batt. Temp (ºC)"], legend=True, ax=ax5, figsize=(10, 10), grid=True,
+                color='Blue')  # items to plot
+        ax5.xaxis.set_major_formatter(DateFormatter('%H:%M'))
+        ax5.set_title("Time/BattTempºC plot of " + str(sys.argv[2]))
+
         plt.tight_layout()
-        plt.savefig("Graphs_full_" + sys.argv[1] + ".png") # save as png
-        
+        plt.savefig("Graphs_full_" + sys.argv[1] + ".png")  # save as png
+
         print("Graphs saved sucessfully")
-        
+
     except ImportError:
         print("Error: Cannot build graph - Pandas and/or matplotlib library not installed.")
         print("")
-        print("To install dependancies, use 'pip3 install pandas matplotlib'. If you encounter errors over the Pandas dependancy 'numpy', you are probably running Debian Buster on a Pi, and so also need to install OpenBLAS ('apt-get install libatlas-base-dev")
+        print(
+            "To install dependancies, use 'pip3 install pandas matplotlib'. If you encounter errors over the Pandas "
+            "dependancy 'numpy', you are probably running Debian Buster on a Pi, and so also need to install OpenBLAS "
+            "('apt-get install libatlas-base-dev")
+
 
 def check_args():
     # test for graph argument, build graph, then exit
-    if len(sys.argv) == 2 :
+    if len(sys.argv) == 2:
         print("Error: Please enter a graph title in double-quotes after file name")
         sys.exit()
 
-    if len(sys.argv) > 2 :
+    if len(sys.argv) > 2:
         make_graph()
         sys.exit()
 
+
 def create_file():
     # create csv file and write headers 
-    with open(CSV_FILE,'x', newline='') as file:
+    with open(CSV_FILE, 'x', newline='') as file:
         writer = csv.writer(file, quoting=csv.QUOTE_NONNUMERIC)
         csvtitles = [
             "Time (s)",
             "Volts (mV)",
             "Power (mW)",
-            "Remaining %"]
+            "Remaining %",
+            "Battery Current (mA)",
+            "Batt. Temp (ºC)"]
         writer.writerow(csvtitles)
         print(csvtitles)
+
 
 def main():
     check_args()
     create_file()
-    while (True):
+    while True:
         # Loop indefinately whilst reading and writing data, until user hits Ctrl-C 
         try:
-            aReceiveBuf = []
-            aReceiveBuf.append(0x00)   # Placeholder
-            for i in range(1,255):
-                aReceiveBuf.append(bus.read_byte_data(SMB_DEVICE_ADDR, i))
+            a_receive_buf = [0x00]
+            for i in range(1, 255):
+                a_receive_buf.append(bus.read_byte_data(SMB_DEVICE_ADDR, i))
             csvdata = [
-                "%d"% (aReceiveBuf[39] << 24 | aReceiveBuf[38] << 16 | aReceiveBuf[37] << 8 | aReceiveBuf[36]),
-                "%d"% (aReceiveBuf[6] << 8 | aReceiveBuf[5]),
-                "%.0f"% ina.power(),
-                "%d"% (aReceiveBuf[20] << 8 | aReceiveBuf[19])] 
+                "%d" % (a_receive_buf[39] << 24 | a_receive_buf[38] << 16 | a_receive_buf[37] << 8 | a_receive_buf[36]),
+                "%d" % (a_receive_buf[6] << 8 | a_receive_buf[5]),
+                "%.0f" % ina.power(),
+                "%d" % (a_receive_buf[20] << 8 | a_receive_buf[19]),
+                "%.0f" % ina_batteries.current(),
+                "%d" % (a_receive_buf[12] << 8 | a_receive_buf[11])]
             print(csvdata)
-            with open(CSV_FILE,'a', newline='') as file:
-                    writer = csv.writer(file, quoting=csv.QUOTE_NONNUMERIC)
-                    writer.writerow(csvdata)
+            with open(CSV_FILE, 'a', newline='') as file:
+                writer = csv.writer(file, quoting=csv.QUOTE_NONNUMERIC)
+                writer.writerow(csvdata)
             time.sleep(DELAY)
         except KeyboardInterrupt:
             sys.exit()
@@ -135,6 +161,7 @@ def main():
                 print("Unexpected error:", sys.exc_info()[0])
                 raise
             pass
+
 
 main()
 

@@ -58,7 +58,7 @@ def make_graph():
         import matplotlib.pyplot as plt
         from matplotlib.dates import DateFormatter
 
-        # buld and save voltage graph
+        # build and save voltage graph
         df = pd.read_csv(sys.argv[1])
         df['Time (H:M)'] = pd.to_datetime(df['Time (s)'], unit='s')
 
@@ -67,7 +67,7 @@ def make_graph():
         plt.title("Time/voltage plot of " + str(sys.argv[2]))
         plt.savefig("Graph_voltage_" + sys.argv[1] + ".png")  # save as png
 
-        # build and save voltage, wattage and % graphs
+        # build and save voltage, Pi wattage, batt%, batt current and batt temp graphs
         fig, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(nrows=5, ncols=1)
         df.plot(x="Time (H:M)", y=["Volts (mV)"], legend=True, ax=ax1, figsize=(10, 10), grid=True,
                 color='Red')  # items to plot

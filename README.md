@@ -1,10 +1,12 @@
-# UPSplus v5 Battery Logger V1.0
-Author: Ed Watson (mail@edwilldesign.com)
+# UPSplus v5 Battery Logger V1.1
+Original author: Ed Watson (mail@edwilldesign.com)
+Contributors: leandroalbero
 
-Logs uptime, battery voltage, device wattage and battery %remaining from the
-GeeekPi UPSv5 (EP-0136) board connected to a Raspberry Pi, and writes to a
-timestamped CSV file for optional graphing via Pandas/Matplotlib (if installed). Built 
-and tested on a Raspberry Pi4b 8gb running RaspiOS 2021-03-04 (Debian Buster) w/ UPSplusV5 FW Ver.3.
+Logs uptime, battery voltage, battery current, battery temperature, device wattage and
+battery %remaining from the GeeekPi UPSv5 (EP-0136) board connected to a Raspberry Pi, 
+and writes to a timestamped CSV file for optional graphing via Pandas/Matplotlib 
+(if installed). Built and tested on a Raspberry Pi4b 8gb running RaspiOS 2021-03-04 
+(Debian Buster) w/ UPSplusV5 FW Ver.3.
 
 Included are example graphs pngs, built from a 4-hour capture of running batteries down.
 

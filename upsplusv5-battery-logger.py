@@ -42,9 +42,9 @@ T = now.strftime("%Y-%m-%d_%H%M%S")
 CSV_FILE = "batt_log_" + T + ".csv"
 
 bus = smbus.SMBus(I2C_DEVICE_BUS)
-ina = INA219(0.00725, address=INA_DEVICE_ADDR)
+ina = INA219(0.00725, busnum=I2C_DEVICE_BUS, address=INA_DEVICE_ADDR)
 ina.configure()
-ina_batteries = INA219(0.005, address=INA_BATT_ADDR)
+ina_batteries = INA219(0.005, busnum=I2C_DEVICE_BUS, address=INA_BATT_ADDR)
 ina_batteries.configure()
 
 

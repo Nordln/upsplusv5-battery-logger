@@ -1,0 +1,12 @@
+[Unit]
+Description=UPSPlus v5 Prometheus Exporter
+After=network-online.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/bin
+ExecStart=/usr/bin/python3 /home/pi/bin/upsplus_exporter.py 9105
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
